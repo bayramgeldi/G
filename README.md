@@ -53,6 +53,14 @@ php artisan dictionary:import-sqlite storage/app/turkmen.sqlite \
   --meaning=definitions
 ```
 
+Or seed PostgreSQL from the committed SQLite file:
+
+```bash
+php artisan db:seed
+```
+
+Docker startup runs migrations and this seeder automatically.
+
 The import is idempotent by normalized headword. Manual aliases for inflected word forms can be added with:
 
 ```bash
