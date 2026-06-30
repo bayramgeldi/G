@@ -1,6 +1,8 @@
 FROM composer:2 AS vendor
 
 WORKDIR /app
+RUN apk add --no-cache icu-dev \
+    && docker-php-ext-install intl
 COPY composer.* ./
 RUN composer install --no-dev --no-interaction --prefer-dist --no-scripts --no-autoloader
 COPY . .
