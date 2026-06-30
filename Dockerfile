@@ -1,7 +1,7 @@
 FROM composer:2 AS vendor
 
 WORKDIR /app
-COPY composer.json composer.lock* ./
+COPY composer.* ./
 RUN composer install --no-dev --no-interaction --prefer-dist --no-scripts --no-autoloader
 COPY . .
 RUN composer dump-autoload --optimize
@@ -9,11 +9,11 @@ RUN composer dump-autoload --optimize
 FROM node:22-alpine AS assets
 
 WORKDIR /app
-COPY package.json ./
-RUN npm install
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN corepack enable && pnpm install --frozen-lockfile
 COPY resources ./resources
 COPY vite.config.js postcss.config.cjs ./
-RUN npm run build
+RUN pnpm run build
 
 FROM php:8.4-cli-alpine
 

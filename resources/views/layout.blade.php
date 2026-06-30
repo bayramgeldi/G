@@ -91,7 +91,7 @@
             popoverMeaning.textContent = '...';
 
             try {
-                const response = await fetch(`{{ route('dictionary.lookup') }}?word=${encodeURIComponent(word)}`, {
+                const response = await fetch(`/dictionary/lookup?word=${encodeURIComponent(word)}`, {
                     headers: {'Accept': 'application/json'},
                 });
                 const data = await response.json();
