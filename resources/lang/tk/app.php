@@ -10,6 +10,7 @@ return [
     'register' => 'Hasap aç',
     'logout' => 'Çyk',
     'leaderboard' => 'Liderler',
+    'roadmap' => 'Roadmap',
     'latest' => 'Täze sözler',
     'definitions' => 'Manylar',
     'definition' => 'Many',

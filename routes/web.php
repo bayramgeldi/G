@@ -10,6 +10,7 @@ use App\Http\Controllers\ExportController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\ModerationLogController;
 use App\Http\Controllers\ModerationReportController;
+use App\Http\Controllers\RoadmapController;
 use App\Http\Controllers\RulesController;
 use App\Http\Controllers\VoteController;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +28,7 @@ Route::post('/definitions/{definition}/report', [ModerationReportController::cla
 Route::post('/definitions/{definition}/appeal', [AppealController::class, 'appealDefinition'])->middleware('auth')->name('definitions.appeal');
 Route::post('/appeals/{appeal}/vote', [AppealController::class, 'vote'])->middleware('auth')->name('appeals.vote');
 Route::get('/leaderboard', LeaderboardController::class)->name('leaderboard');
+Route::get('/roadmap', RoadmapController::class)->name('roadmap');
 Route::get('/governance/rules', RulesController::class)->name('governance.rules');
 Route::get('/governance/log', ModerationLogController::class)->name('governance.log');
 Route::get('/export.json', ExportController::class)->name('export.json');
