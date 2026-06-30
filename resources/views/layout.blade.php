@@ -10,13 +10,15 @@
 <body class="min-h-screen bg-stone-50 text-stone-950">
     <div class="min-h-screen">
         <header class="sticky top-0 z-20 border-b border-stone-200 bg-white/95 backdrop-blur">
-            <nav class="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
+            <nav class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3">
                 <a href="{{ route('home') }}" class="min-w-0">
                     <span class="block text-lg font-black tracking-tight">{{ __('app.app_name') }}</span>
                     <span class="hidden text-xs text-stone-500 sm:block">{{ __('app.tagline') }}</span>
                 </a>
-                <div class="flex shrink-0 items-center gap-2 text-sm">
+                <div class="flex flex-wrap items-center gap-2 text-sm">
                     <a class="rounded-md px-2 py-2 font-medium text-stone-700 hover:bg-stone-100" href="{{ route('leaderboard') }}">{{ __('app.leaderboard') }}</a>
+                    <a class="rounded-md px-2 py-2 font-medium text-stone-700 hover:bg-stone-100" href="{{ route('governance.rules') }}">{{ __('app.rules') }}</a>
+                    <a class="rounded-md px-2 py-2 font-medium text-stone-700 hover:bg-stone-100" href="{{ route('governance.log') }}">{{ __('app.moderation_log') }}</a>
                     @auth
                         <a class="rounded-md bg-emerald-700 px-3 py-2 font-semibold text-white hover:bg-emerald-800" href="{{ route('entries.create') }}">{{ __('app.suggest') }}</a>
                         <form method="post" action="{{ route('logout') }}">
