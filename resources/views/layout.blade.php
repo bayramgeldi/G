@@ -54,7 +54,7 @@
         <div class="flex items-start justify-between gap-4">
             <div>
                 <div id="dictionary-word" class="font-bold text-stone-950"></div>
-                <div id="dictionary-meaning" class="mt-1 text-sm leading-6 text-stone-700"></div>
+                <div id="dictionary-meaning" class="dictionary-meaning mt-1 text-sm leading-6 text-stone-700"></div>
             </div>
             <button type="button" data-close-dictionary class="rounded-md px-2 py-1 text-xl leading-none text-stone-500 hover:bg-stone-100" aria-label="Close">&times;</button>
         </div>
@@ -96,7 +96,11 @@
                 });
                 const data = await response.json();
                 popoverWord.textContent = data.headword || word;
-                popoverMeaning.textContent = data.meaning || data.message;
+                if (data.meaning) {
+                    popoverMeaning.innerHTML = data.meaning;
+                } else {
+                    popoverMeaning.textContent = data.message || '';
+                }
             } catch (error) {
                 popoverMeaning.textContent = '{{ __('app.dictionary_not_found') }}';
             }

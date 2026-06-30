@@ -31,6 +31,11 @@ First inspect the uploaded SQLite file:
 php artisan dictionary:import-sqlite storage/app/dictionary.sqlite --inspect
 ```
 
+For example: 
+```bash
+php artisan dictionary:import-sqlite storage/app/turkmen.sqlite --inspect
+```
+
 Then import with the mapped table and columns:
 
 ```bash
@@ -38,6 +43,14 @@ php artisan dictionary:import-sqlite storage/app/dictionary.sqlite \
   --table=words \
   --word=headword \
   --meaning=definition
+```
+
+For example:
+```bash
+php artisan dictionary:import-sqlite storage/app/turkmen.sqlite \
+  --table=words \
+  --word=word \
+  --meaning=definitions
 ```
 
 The import is idempotent by normalized headword. Manual aliases for inflected word forms can be added with:
