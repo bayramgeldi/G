@@ -21,3 +21,8 @@
 .dictionary-meaning :where(span) {
     @apply text-stone-500;
 }
+
+.rules-list {
+    list-style-type: disc;
+    padding-left: 1.25rem;
+}

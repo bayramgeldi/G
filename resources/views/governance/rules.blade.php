@@ -1,9 +1,9 @@
 <x-layout :title="__('app.rules')">
-    <section class="mx-auto max-w-3xl">
+    <section class="mx-auto max-w-2xl">
         <h1 class="text-2xl font-black">{{ __('app.rules') }}</h1>
-        <div class="mt-5 space-y-4 rounded-lg border border-stone-200 bg-white p-5 leading-7">
+        <div class="mt-5 space-y-4 rounded-lg border border-stone-200 bg-white p-8 leading-7">
             <p>{{ __('app.rules_intro') }}</p>
-            <ul class="list-disc space-y-2 pl-5">
+            <ul class="rules-list space-y-4 pl-3">
                 <li>{{ __('app.rule_language') }}</li>
                 <li>{{ __('app.rule_respect') }}</li>
                 <li>{{ __('app.rule_no_harm') }}</li>

@@ -10,7 +10,7 @@
 <body class="min-h-screen bg-stone-50 text-stone-950">
     <div class="min-h-screen">
         <header class="sticky top-0 z-20 border-b border-stone-200 bg-white/95 backdrop-blur">
-            <nav class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3">
+            <nav class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-5">
                 <a href="{{ route('home') }}" class="min-w-0">
                     <span class="block text-lg font-black tracking-tight">{{ __('app.app_name') }}</span>
                     <span class="hidden text-xs text-stone-500 sm:block">{{ __('app.tagline') }}</span>

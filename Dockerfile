@@ -6,6 +6,15 @@ RUN composer install --no-dev --no-interaction --prefer-dist --no-scripts --no-a
 COPY . .
 RUN composer dump-autoload --optimize
 
+FROM node:22-alpine AS assets
+
+WORKDIR /app
+COPY package.json ./
+RUN npm install
+COPY resources ./resources
+COPY vite.config.js postcss.config.cjs ./
+RUN npm run build
+
 FROM php:8.4-cli-alpine
 
 WORKDIR /var/www/html
@@ -14,6 +23,7 @@ RUN apk add --no-cache bash postgresql-dev sqlite-dev icu-dev \
     && docker-php-ext-install intl pdo_pgsql pdo_sqlite
 
 COPY --from=vendor /app /var/www/html
+COPY --from=assets /app/public/build /var/www/html/public/build
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint
 RUN chmod +x /usr/local/bin/entrypoint \
     && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs \
