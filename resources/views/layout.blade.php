@@ -17,6 +17,7 @@
                 </a>
                 <div class="flex flex-wrap items-center gap-2 text-sm">
                     <a class="rounded-md px-2 py-2 font-medium text-stone-700 hover:bg-stone-100" href="{{ route('leaderboard') }}">{{ __('app.leaderboard') }}</a>
+                    <a class="rounded-md px-2 py-2 font-medium text-stone-700 hover:bg-stone-100" href="{{ route('roadmap') }}">{{ __('app.roadmap') }}</a>
                     <a class="rounded-md px-2 py-2 font-medium text-stone-700 hover:bg-stone-100" href="{{ route('governance.rules') }}">{{ __('app.rules') }}</a>
                     <a class="rounded-md px-2 py-2 font-medium text-stone-700 hover:bg-stone-100" href="{{ route('governance.log') }}">{{ __('app.moderation_log') }}</a>
                     @auth
