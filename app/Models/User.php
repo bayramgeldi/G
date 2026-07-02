@@ -64,4 +64,9 @@ class User extends Authenticatable implements FilamentUser
             || $this->definitions()->exists()
             || $this->votes()->count() >= config('moderation.active_vote_count');
     }
+
+    public function canReviewAnonymousSubmissions(): bool
+    {
+        return $this->is_admin || $this->isModerationEligible();
+    }
 }

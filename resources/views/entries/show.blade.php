@@ -79,7 +79,7 @@
                         <blockquote data-lookup-text class="mt-3 border-l-4 border-amber-400 pl-3 text-sm leading-6 text-stone-600">{{ $definition->example }}</blockquote>
                     @endif
                     <div class="mt-3 flex items-center justify-between gap-3 text-xs text-stone-500">
-                        <span>{{ __('app.by') }} {{ $definition->user->name }}</span>
+                        <span>{{ __('app.by') }} {{ $definition->user->name ?? __('app.anonymous') }}</span>
                         @auth
                             @if (auth()->user()->is_admin)
                                 <form method="post" action="{{ route('admin.definitions.hide', $definition) }}">

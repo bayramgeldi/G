@@ -8,6 +8,7 @@
                 <li>{{ __('app.rule_respect') }}</li>
                 <li>{{ __('app.rule_no_harm') }}</li>
                 <li>{{ __('app.rule_no_spam') }}</li>
+                <li>{{ __('app.rule_anonymous_review') }}</li>
                 <li>{{ __('app.rule_transparency') }}</li>
             </ul>
             <a href="{{ route('export.json') }}" class="inline-block rounded-md bg-emerald-700 px-4 py-3 text-sm font-bold text-white">{{ __('app.export_data') }}</a>

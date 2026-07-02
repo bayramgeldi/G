@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AnonymousSubmission;
 use App\Models\Entry;
 use App\Support\NormalizesTurkmenText;
 use Illuminate\Http\Request;
@@ -39,6 +40,16 @@ class EntryController extends Controller
             'example' => ['nullable', 'string', 'max:2000'],
         ]);
 
+        if (! $request->user()) {
+            AnonymousSubmission::makePending([
+                ...$validated,
+                'submitter_ip_hash' => $this->hashNullable($request->ip()),
+                'submitter_user_agent_hash' => $this->hashNullable($request->userAgent()),
+            ]);
+
+            return redirect()->route('entries.create')->with('status', __('app.anonymous_submission_received'));
+        }
+
         $entry = DB::transaction(function () use ($request, $validated) {
             $normalized = NormalizesTurkmenText::normalize($validated['term']);
             $entry = Entry::firstOrCreate(
@@ -60,6 +71,15 @@ class EntryController extends Controller
         });
 
         return redirect()->route('entries.show', $entry)->with('status', __('app.saved'));
+    }
+
+    private function hashNullable(?string $value): ?string
+    {
+        if (! $value) {
+            return null;
+        }
+
+        return hash_hmac('sha256', $value, config('app.key'));
     }
 
     public function show(Entry $entry)

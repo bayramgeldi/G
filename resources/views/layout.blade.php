@@ -21,12 +21,16 @@
                     <a class="rounded-md px-2 py-2 font-medium text-stone-700 hover:bg-stone-100" href="{{ route('governance.rules') }}">{{ __('app.rules') }}</a>
                     <a class="rounded-md px-2 py-2 font-medium text-stone-700 hover:bg-stone-100" href="{{ route('governance.log') }}">{{ __('app.moderation_log') }}</a>
                     @auth
+                        @if (auth()->user()->canReviewAnonymousSubmissions())
+                            <a class="rounded-md px-2 py-2 font-medium text-stone-700 hover:bg-stone-100" href="{{ route('moderation.anonymous-submissions') }}">{{ __('app.review_anonymous') }}</a>
+                        @endif
                         <a class="rounded-md bg-emerald-700 px-3 py-2 font-semibold text-white hover:bg-emerald-800" href="{{ route('entries.create') }}">{{ __('app.suggest') }}</a>
                         <form method="post" action="{{ route('logout') }}">
                             @csrf
                             <button class="rounded-md px-2 py-2 font-medium text-stone-700 hover:bg-stone-100">{{ __('app.logout') }}</button>
                         </form>
                     @else
+                        <a class="rounded-md bg-emerald-700 px-3 py-2 font-semibold text-white hover:bg-emerald-800" href="{{ route('entries.create') }}">{{ __('app.suggest') }}</a>
                         <a class="rounded-md px-2 py-2 font-medium text-stone-700 hover:bg-stone-100" href="{{ route('login') }}">{{ __('app.login') }}</a>
                         <a class="rounded-md bg-emerald-700 px-3 py-2 font-semibold text-white hover:bg-emerald-800" href="{{ route('register') }}">{{ __('app.register') }}</a>
                     @endauth
