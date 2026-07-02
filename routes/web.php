@@ -5,6 +5,7 @@ use App\Http\Controllers\AppealController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DefinitionController;
 use App\Http\Controllers\DictionaryLookupController;
+use App\Http\Controllers\DictionarySuggestionController;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\LeaderboardController;
@@ -33,6 +34,7 @@ Route::get('/governance/rules', RulesController::class)->name('governance.rules'
 Route::get('/governance/log', ModerationLogController::class)->name('governance.log');
 Route::get('/export.json', ExportController::class)->name('export.json');
 Route::get('/dictionary/lookup', DictionaryLookupController::class)->name('dictionary.lookup');
+Route::get('/dictionary/suggestions', DictionarySuggestionController::class)->name('dictionary.suggestions');
 
 Route::get('/register', [AuthController::class, 'showRegister'])->middleware('guest')->name('register');
 Route::post('/register', [AuthController::class, 'register'])->middleware('guest');

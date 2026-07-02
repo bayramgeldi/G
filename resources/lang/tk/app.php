@@ -25,6 +25,8 @@ return [
     'votes' => 'ses',
     'by' => 'goşan',
     'dictionary_not_found' => 'Sözlükde tapylmady.',
+    'dictionary_hints' => 'Sözlük maglumatlary',
+    'matched_alias' => 'Meňzeş görnüş',
     'click_words' => 'Sözleriň üstüne basyp asyl manysyny görüp bilersiňiz.',
     'name' => 'At',
     'email' => 'Email',

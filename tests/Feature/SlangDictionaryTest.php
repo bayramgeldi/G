@@ -124,4 +124,86 @@ class SlangDictionaryTest extends TestCase
             ->assertOk()
             ->assertJsonPath('meaning', 'Okalýan eser.');
     }
+
+    public function test_dictionary_suggestions_return_headword_matches(): void
+    {
+        DictionaryWord::create([
+            'headword' => 'kitap',
+            'normalized_headword' => 'kitap',
+            'meaning' => 'Okalýan eser.',
+        ]);
+
+        $this->getJson(route('dictionary.suggestions', ['q' => 'Ki']))
+            ->assertOk()
+            ->assertJsonPath('suggestions.0.headword', 'kitap')
+            ->assertJsonPath('suggestions.0.meaning', 'Okalýan eser.')
+            ->assertJsonPath('suggestions.0.matched_alias', null);
+    }
+
+    public function test_dictionary_suggestions_return_alias_matches_with_canonical_word(): void
+    {
+        $word = DictionaryWord::create([
+            'headword' => 'kitap',
+            'normalized_headword' => 'kitap',
+            'meaning' => 'Okalýan eser.',
+        ]);
+        DictionaryAlias::create([
+            'dictionary_word_id' => $word->id,
+            'alias' => 'kitaby',
+            'normalized_alias' => 'kitaby',
+        ]);
+
+        $this->getJson(route('dictionary.suggestions', ['q' => 'kitaby']))
+            ->assertOk()
+            ->assertJsonPath('suggestions.0.headword', 'kitap')
+            ->assertJsonPath('suggestions.0.matched_alias', 'kitaby');
+    }
+
+    public function test_dictionary_suggestions_are_limited_and_empty_for_short_queries(): void
+    {
+        foreach (range(1, 10) as $i) {
+            DictionaryWord::create([
+                'headword' => 'suw'.$i,
+                'normalized_headword' => 'suw'.$i,
+                'meaning' => 'Içilýän suwuklyk.',
+            ]);
+        }
+
+        $this->getJson(route('dictionary.suggestions', ['q' => 'suw']))
+            ->assertOk()
+            ->assertJsonCount(8, 'suggestions');
+
+        $this->getJson(route('dictionary.suggestions', ['q' => 's']))
+            ->assertOk()
+            ->assertJsonCount(0, 'suggestions');
+
+        $this->getJson(route('dictionary.suggestions', ['q' => 'tapylmaz']))
+            ->assertOk()
+            ->assertJsonCount(0, 'suggestions');
+    }
+
+    public function test_dictionary_suggestions_normalize_turkmen_text(): void
+    {
+        DictionaryWord::create([
+            'headword' => 'Älem',
+            'normalized_headword' => NormalizesTurkmenText::normalize('Älem'),
+            'meaning' => 'Dünýä.',
+        ]);
+
+        $this->getJson(route('dictionary.suggestions', ['q' => 'ÄL']))
+            ->assertOk()
+            ->assertJsonPath('suggestions.0.headword', 'Älem');
+    }
+
+    public function test_create_entry_page_includes_dictionary_hint_hooks(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('entries.create'))
+            ->assertOk()
+            ->assertSee('data-dictionary-suggestion-input', false)
+            ->assertSee('data-dictionary-suggestions', false)
+            ->assertSee(__('app.dictionary_hints'));
+    }
 }
