@@ -4,7 +4,7 @@
         : __('app.seo_entry_description', ['term' => $entry->term]);
 @endphp
 
-<x-layout :title="$entry->term" :description="$entryDescription" :canonical="route('entries.show', $entry)" og-type="article">
+<x-layout :title="$entry->term" :description="$entryDescription" :canonical="route('entries.show', $entry)" :og-image="$entry->socialImageUrl()" :og-image-alt="__('app.og_image_alt', ['term' => $entry->term])" og-type="article">
     <section class="mb-5">
         <div class="flex items-start justify-between gap-3">
             <div>

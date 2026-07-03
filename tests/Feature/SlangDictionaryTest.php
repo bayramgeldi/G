@@ -204,6 +204,7 @@ class SlangDictionaryTest extends TestCase
             ->assertOk()
             ->assertSee('data-dictionary-suggestion-input', false)
             ->assertSee('data-dictionary-suggestions', false)
+            ->assertSee('meaning.innerHTML = sanitizeDictionaryHtml(suggestion.meaning);', false)
             ->assertSee(__('app.dictionary_hints'));
     }
 }

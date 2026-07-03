@@ -2,7 +2,9 @@
 
 namespace App\Support;
 
+use App\Jobs\GenerateEntrySocialImage;
 use App\Models\Appeal;
+use App\Models\Definition;
 use App\Models\Entry;
 use App\Models\ModerationEvent;
 use App\Models\User;
@@ -27,6 +29,7 @@ final class ModeratesContent
         }
 
         $content->update(['is_hidden' => true]);
+        self::refreshSocialImage($content);
 
         self::log('report_threshold_hide', $content, null, 'community_reports', [
             'report_count' => $reportCount,
@@ -37,6 +40,7 @@ final class ModeratesContent
     public static function emergencyHide(Model $content, User $actor, ?string $reason = null): void
     {
         $content->update(['is_hidden' => true]);
+        self::refreshSocialImage($content);
 
         self::log('emergency_hide', $content, $actor, $reason ?: 'emergency', [], 'admin');
     }
@@ -44,6 +48,7 @@ final class ModeratesContent
     public static function restoreFromAppeal(Model $content, Appeal $appeal): void
     {
         $content->update(['is_hidden' => false]);
+        self::refreshSocialImage($content);
         $appeal->update(['status' => 'restored']);
 
         self::log('appeal_restored', $content, null, 'appeal_passed', [
@@ -64,5 +69,12 @@ final class ModeratesContent
             'reason' => $reason,
             'details' => $details ?: null,
         ]);
+    }
+
+    private static function refreshSocialImage(Model $content): void
+    {
+        if ($content instanceof Definition) {
+            GenerateEntrySocialImage::dispatch($content->entry)->afterCommit();
+        }
     }
 }

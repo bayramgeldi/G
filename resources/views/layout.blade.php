@@ -23,12 +23,20 @@
     <meta property="og:url" content="{{ $canonicalUrl }}">
     @if ($socialImage)
         <meta property="og:image" content="{{ $socialImage }}">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+        @if ($ogImageAlt)
+            <meta property="og:image:alt" content="{{ $ogImageAlt }}">
+        @endif
     @endif
     <meta name="twitter:card" content="{{ $socialImage ? 'summary_large_image' : 'summary' }}">
     <meta name="twitter:title" content="{{ $pageTitle }}">
     <meta name="twitter:description" content="{{ $metaDescription }}">
     @if ($socialImage)
         <meta name="twitter:image" content="{{ $socialImage }}">
+        @if ($ogImageAlt)
+            <meta name="twitter:image:alt" content="{{ $ogImageAlt }}">
+        @endif
     @endif
     @if (config('services.google_analytics.id'))
         <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.google_analytics.id') }}"></script>
@@ -123,6 +131,23 @@
             return text.slice(start, end).trim();
         }
 
+        function sanitizeDictionaryHtml(html) {
+            const allowedTags = new Set(['B', 'BR', 'DIV', 'EM', 'I', 'LI', 'OL', 'P', 'SPAN', 'STRONG', 'UL']);
+            const template = document.createElement('template');
+            template.innerHTML = html || '';
+
+            template.content.querySelectorAll('*').forEach((element) => {
+                if (!allowedTags.has(element.tagName)) {
+                    element.replaceWith(...element.childNodes);
+                    return;
+                }
+
+                [...element.attributes].forEach((attribute) => element.removeAttribute(attribute.name));
+            });
+
+            return template.innerHTML;
+        }
+
         async function lookup(word) {
             if (!word) return;
             popover.classList.remove('hidden');
@@ -136,7 +161,7 @@
                 const data = await response.json();
                 popoverWord.textContent = data.headword || word;
                 if (data.meaning) {
-                    popoverMeaning.innerHTML = data.meaning;
+                    popoverMeaning.innerHTML = sanitizeDictionaryHtml(data.meaning);
                 } else {
                     popoverMeaning.textContent = data.message || '';
                 }
