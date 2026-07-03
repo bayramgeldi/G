@@ -13,6 +13,7 @@ class Layout extends Component
         public ?string $canonical = null,
         public string $ogType = 'website',
         public ?string $ogImage = null,
+        public ?string $ogImageAlt = null,
         public bool $noindex = false,
     )
     {

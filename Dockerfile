@@ -21,8 +21,9 @@ FROM php:8.4-cli-alpine
 
 WORKDIR /var/www/html
 
-RUN apk add --no-cache bash postgresql-dev sqlite-dev icu-dev \
-    && docker-php-ext-install intl pdo_pgsql pdo_sqlite
+RUN apk add --no-cache bash postgresql-dev sqlite-dev icu-dev freetype-dev libjpeg-turbo-dev libpng-dev ttf-dejavu \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd intl pdo_pgsql pdo_sqlite
 
 COPY --from=vendor /app /var/www/html
 COPY --from=assets /app/public/build /var/www/html/public/build

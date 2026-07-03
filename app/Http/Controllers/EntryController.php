@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AnonymousSubmission;
 use App\Models\Entry;
+use App\Jobs\GenerateEntrySocialImage;
 use App\Support\NormalizesTurkmenText;
 use App\Support\RecaptchaVerifier;
 use Illuminate\Http\Request;
@@ -72,6 +73,8 @@ class EntryController extends Controller
 
             return $entry;
         });
+
+        GenerateEntrySocialImage::dispatch($entry)->afterCommit();
 
         return redirect()->route('entries.show', $entry)->with('status', __('app.saved'));
     }

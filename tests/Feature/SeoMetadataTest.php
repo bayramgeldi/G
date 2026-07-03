@@ -63,6 +63,32 @@ class SeoMetadataTest extends TestCase
             ->assertDontSee('<strong>Meaning with markup</strong>', false);
     }
 
+    public function test_entry_page_uses_generated_social_image_metadata(): void
+    {
+        $user = User::factory()->create();
+        $entry = Entry::create([
+            'user_id' => $user->id,
+            'term' => 'ýörite söz',
+            'slug' => 'yorite-soz',
+            'normalized_term' => NormalizesTurkmenText::normalize('ýörite söz'),
+            'og_image_path' => 'og/entries/yorite-soz.png',
+        ]);
+        Definition::create([
+            'entry_id' => $entry->id,
+            'user_id' => $user->id,
+            'meaning' => 'Ýörite many.',
+        ]);
+
+        $this->get(route('entries.show', $entry))
+            ->assertOk()
+            ->assertSee('<meta property="og:image" content="http://localhost/og/entries/yorite-soz.png">', false)
+            ->assertSee('<meta property="og:image:width" content="1200">', false)
+            ->assertSee('<meta property="og:image:height" content="630">', false)
+            ->assertSee('<meta property="og:image:alt" content="ýörite söz sözüniň Göçme Manyly Sözler Sözlügindäki many kartasy">', false)
+            ->assertSee('<meta name="twitter:card" content="summary_large_image">', false)
+            ->assertSee('<meta name="twitter:image" content="http://localhost/og/entries/yorite-soz.png">', false);
+    }
+
     public function test_utility_pages_are_noindexed(): void
     {
         $this->get(route('login'))
