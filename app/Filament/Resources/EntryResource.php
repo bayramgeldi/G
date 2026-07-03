@@ -4,8 +4,10 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\EntryResource\Pages;
 use App\Models\Entry;
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -26,6 +28,14 @@ class EntryResource extends ReadOnlyResource
             TextColumn::make('user.email')->label('Author')->searchable(),
             TextColumn::make('definitions_count')->counts('definitions')->label('Definitions')->sortable(),
             TextColumn::make('is_hidden')->label('Visibility')->formatStateUsing(fn (bool $state): string => $state ? 'Hidden' : 'Visible')->badge()->sortable(),
+            ImageColumn::make('social_image_preview')
+                ->label('Social image')
+                ->state(fn (Entry $record): ?string => $record->socialImageUrl())
+                ->imageWidth(120)
+                ->imageHeight(63)
+                ->checkFileExistence(false),
+            TextColumn::make('og_image_generated_at')->label('Social image generated')->dateTime()->sortable(),
+            TextColumn::make('og_image_error')->label('Social image error')->limit(40)->wrap(),
             TextColumn::make('created_at')->dateTime()->sortable(),
         ]);
     }
@@ -39,6 +49,21 @@ class EntryResource extends ReadOnlyResource
             TextEntry::make('normalized_term'),
             TextEntry::make('user.email')->label('Author'),
             TextEntry::make('is_hidden')->label('Visibility')->formatStateUsing(fn (bool $state): string => $state ? 'Hidden' : 'Visible')->badge(),
+            ImageEntry::make('social_image_preview')
+                ->label('Social image preview')
+                ->state(fn (Entry $record): ?string => $record->socialImageUrl())
+                ->imageWidth(600)
+                ->imageHeight(315)
+                ->checkFileExistence(false)
+                ->columnSpanFull(),
+            TextEntry::make('og_image_path')->label('Social image path')->copyable(),
+            TextEntry::make('social_image_url')
+                ->label('Social image URL')
+                ->state(fn (Entry $record): ?string => $record->socialImageUrl())
+                ->copyable()
+                ->url(fn (Entry $record): ?string => $record->socialImageUrl(), shouldOpenInNewTab: true),
+            TextEntry::make('og_image_generated_at')->label('Social image generated')->dateTime(),
+            TextEntry::make('og_image_error')->label('Social image error')->columnSpanFull(),
             TextEntry::make('created_at')->dateTime(),
             TextEntry::make('updated_at')->dateTime(),
         ]);
