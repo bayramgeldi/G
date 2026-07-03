@@ -15,9 +15,73 @@ use App\Http\Controllers\ModerationReportController;
 use App\Http\Controllers\RoadmapController;
 use App\Http\Controllers\RulesController;
 use App\Http\Controllers\VoteController;
+use App\Models\Entry;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [EntryController::class, 'index'])->name('home');
+Route::get('/sitemap.xml', function () {
+    $urls = collect([
+        route('home'),
+        route('leaderboard'),
+        route('roadmap'),
+        route('governance.rules'),
+        route('governance.log'),
+    ]);
+
+    Entry::query()
+        ->visible()
+        ->orderBy('id')
+        ->each(function (Entry $entry) use ($urls) {
+            $urls->push(route('entries.show', $entry));
+        });
+
+    $xml = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
+    $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
+
+    foreach ($urls as $url) {
+        $xml .= '    <url><loc>'.htmlspecialchars($url, ENT_XML1 | ENT_COMPAT, 'UTF-8').'</loc></url>'."\n";
+    }
+
+    $xml .= '</urlset>'."\n";
+
+    return response($xml, 200)->header('Content-Type', 'application/xml; charset=UTF-8');
+})->name('sitemap');
+Route::get('/robots.txt', function () {
+    $lines = [
+        'User-agent: *',
+        'Allow: /',
+        'Disallow: /login',
+        'Disallow: /register',
+        'Disallow: /entries/create',
+        'Disallow: /moderation/',
+        'Disallow: /admin/',
+        'Disallow: /dictionary/lookup',
+        'Disallow: /dictionary/suggestions',
+        'Sitemap: '.route('sitemap'),
+    ];
+
+    return response(implode("\n", $lines)."\n", 200)->header('Content-Type', 'text/plain; charset=UTF-8');
+})->name('robots');
+Route::get('/llms.txt', function () {
+    $lines = [
+        '# GMSS',
+        '',
+        'GMSS is a community-driven Turkmen slang dictionary with public entries, definitions, governance notes, and moderation transparency.',
+        '',
+        '## Canonical URLs',
+        '- Home: '.route('home'),
+        '- Sitemap: '.route('sitemap'),
+        '- Rules: '.route('governance.rules'),
+        '- Roadmap: '.route('roadmap'),
+        '- Leaderboard: '.route('leaderboard'),
+        '- Moderation log: '.route('governance.log'),
+        '- Community export: '.route('export.json'),
+        '',
+        'Entries and definitions are community-provided and governed by the site moderation rules.',
+    ];
+
+    return response(implode("\n", $lines)."\n", 200)->header('Content-Type', 'text/plain; charset=UTF-8');
+})->name('llms');
 Route::get('/entries/create', [EntryController::class, 'create'])->name('entries.create');
 Route::post('/entries', [EntryController::class, 'store'])->name('entries.store');
 Route::get('/entries/{entry:slug}', [EntryController::class, 'show'])->name('entries.show');

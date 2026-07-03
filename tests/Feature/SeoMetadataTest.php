@@ -116,4 +116,79 @@ class SeoMetadataTest extends TestCase
             ->assertSee('<meta name="robots" content="index, follow">', false)
             ->assertSee('<meta name="description" content="'.e(__('app.seo_roadmap_description')).'">', false);
     }
+
+    public function test_sitemap_lists_indexable_pages_and_visible_entries(): void
+    {
+        config(['app.url' => 'https://example.test']);
+
+        $user = User::factory()->create();
+        $visibleEntry = Entry::create([
+            'user_id' => $user->id,
+            'term' => 'visible term',
+            'slug' => 'visible-term',
+            'normalized_term' => NormalizesTurkmenText::normalize('visible term'),
+        ]);
+        $hiddenEntry = Entry::create([
+            'user_id' => $user->id,
+            'term' => 'hidden term',
+            'slug' => 'hidden-term',
+            'normalized_term' => NormalizesTurkmenText::normalize('hidden term'),
+            'is_hidden' => true,
+        ]);
+
+        $this->get(route('sitemap'))
+            ->assertOk()
+            ->assertHeader('Content-Type', 'application/xml; charset=UTF-8')
+            ->assertSee('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">', false)
+            ->assertSee('<loc>'.route('home').'</loc>', false)
+            ->assertSee('<loc>'.route('leaderboard').'</loc>', false)
+            ->assertSee('<loc>'.route('roadmap').'</loc>', false)
+            ->assertSee('<loc>'.route('governance.rules').'</loc>', false)
+            ->assertSee('<loc>'.route('governance.log').'</loc>', false)
+            ->assertSee('<loc>'.route('entries.show', $visibleEntry).'</loc>', false)
+            ->assertDontSee(route('entries.show', $hiddenEntry), false)
+            ->assertDontSee(route('login'), false)
+            ->assertDontSee(route('register'), false)
+            ->assertDontSee(route('entries.create'), false)
+            ->assertDontSee(route('dictionary.lookup'), false)
+            ->assertDontSee(route('dictionary.suggestions'), false);
+    }
+
+    public function test_robots_txt_allows_public_crawling_with_expected_exclusions(): void
+    {
+        config(['app.url' => 'https://example.test']);
+
+        $this->get(route('robots'))
+            ->assertOk()
+            ->assertHeader('Content-Type', 'text/plain; charset=UTF-8')
+            ->assertSee('User-agent: *', false)
+            ->assertSee('Allow: /', false)
+            ->assertSee('Disallow: /login', false)
+            ->assertSee('Disallow: /register', false)
+            ->assertSee('Disallow: /entries/create', false)
+            ->assertSee('Disallow: /moderation/', false)
+            ->assertSee('Disallow: /admin/', false)
+            ->assertSee('Disallow: /dictionary/lookup', false)
+            ->assertSee('Disallow: /dictionary/suggestions', false)
+            ->assertSee('Sitemap: '.route('sitemap'), false);
+    }
+
+    public function test_llms_txt_describes_site_and_core_public_resources(): void
+    {
+        config(['app.url' => 'https://example.test']);
+
+        $this->get(route('llms'))
+            ->assertOk()
+            ->assertHeader('Content-Type', 'text/plain; charset=UTF-8')
+            ->assertSee('# GMSS', false)
+            ->assertSee('community-driven Turkmen slang dictionary', false)
+            ->assertSee('Home: '.route('home'), false)
+            ->assertSee('Sitemap: '.route('sitemap'), false)
+            ->assertSee('Rules: '.route('governance.rules'), false)
+            ->assertSee('Roadmap: '.route('roadmap'), false)
+            ->assertSee('Leaderboard: '.route('leaderboard'), false)
+            ->assertSee('Moderation log: '.route('governance.log'), false)
+            ->assertSee('Community export: '.route('export.json'), false)
+            ->assertSee('community-provided and governed by the site moderation rules', false);
+    }
 }

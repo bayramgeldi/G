@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\GenerateEntrySocialImage;
 use App\Models\Entry;
+use App\Services\EntrySocialImageGenerator;
 use Illuminate\Http\Request;
 
 class DefinitionController extends Controller
@@ -23,7 +23,7 @@ class DefinitionController extends Controller
             'example' => $validated['example'] ?? null,
         ]);
 
-        GenerateEntrySocialImage::dispatch($entry)->afterCommit();
+        app(EntrySocialImageGenerator::class)->generate($entry->fresh());
 
         return redirect()->route('entries.show', $entry)->with('status', __('app.saved'));
     }

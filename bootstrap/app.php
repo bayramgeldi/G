@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Console\Commands\AddDictionaryAlias;
 use App\Console\Commands\ImportDictionarySqlite;
+use App\Console\Commands\RegenerateEntrySocialImages;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 
@@ -17,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withCommands([
         AddDictionaryAlias::class,
         ImportDictionarySqlite::class,
+        RegenerateEntrySocialImages::class,
     ])
     ->withProviders([
         App\Providers\AppServiceProvider::class,
