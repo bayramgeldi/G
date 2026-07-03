@@ -44,6 +44,7 @@ class EntrySocialImageGenerator
 
         try {
             $font = $this->fontPath();
+            $wordFont = $this->wordFontPath();
             $path = 'og/entries/'.$entry->slug.'.png';
             $absolutePath = public_path($path);
 
@@ -67,14 +68,14 @@ class EntrySocialImageGenerator
             $siteName = __('app.app_name');
             $term = Str::limit($entry->term, 60, '...');
             $meaning = Str::limit(trim(strip_tags($definition->meaning)), 170, '...');
-            $termSize = $this->fitFontSize($term, $font, 72, 38, 440);
+            $termSize = $this->fitFontSize($term, $wordFont, 78, 40, 440);
 
             imagettftext($image, 27, 0, 82, 108, $gold, $font, $siteName);
             imagettftext($image, 18, 0, 82, 144, $cream, $font, 'Turkmen slang dictionary');
-            $termLineHeight = (int) round($termSize * 1.16);
-            $termLines = $this->wrappedLines($term, $font, $termSize, 440, 2);
-            $this->drawLines($image, $termLines, $font, $termSize, $cream, 82, 304, $termLineHeight);
-            $underlineY = 304 + ((count($termLines) - 1) * $termLineHeight) + 36;
+            $termLineHeight = (int) round($termSize * 1.12);
+            $termLines = $this->wrappedLines($term, $wordFont, $termSize, 440, 2);
+            $this->drawLines($image, $termLines, $wordFont, $termSize, $cream, 82, 306, $termLineHeight);
+            $underlineY = 306 + ((count($termLines) - 1) * $termLineHeight) + 36;
             imagefilledrectangle($image, 86, $underlineY, 230, $underlineY + 5, $gold);
 
             imagettftext($image, 26, 0, 662, 158, $soft, $font, 'Definition:');
@@ -265,6 +266,22 @@ class EntrySocialImageGenerator
         }
 
         throw new RuntimeException('No TrueType font found for social image generation.');
+    }
+
+    private function wordFontPath(): string
+    {
+        $paths = [
+            '/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf',
+            '/usr/share/fonts/dejavu/DejaVuSerif.ttf',
+        ];
+
+        foreach ($paths as $path) {
+            if (is_file($path)) {
+                return $path;
+            }
+        }
+
+        return $this->fontPath();
     }
 
     private function drawBackground($image): void
