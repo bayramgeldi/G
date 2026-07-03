@@ -2,12 +2,12 @@
 
 namespace App\Support;
 
-use App\Jobs\GenerateEntrySocialImage;
 use App\Models\Appeal;
 use App\Models\Definition;
 use App\Models\Entry;
 use App\Models\ModerationEvent;
 use App\Models\User;
+use App\Services\EntrySocialImageGenerator;
 use Illuminate\Database\Eloquent\Model;
 
 final class ModeratesContent
@@ -74,7 +74,7 @@ final class ModeratesContent
     private static function refreshSocialImage(Model $content): void
     {
         if ($content instanceof Definition) {
-            GenerateEntrySocialImage::dispatch($content->entry)->afterCommit();
+            app(EntrySocialImageGenerator::class)->generate($content->entry?->fresh());
         }
     }
 }

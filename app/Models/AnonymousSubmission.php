@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Jobs\GenerateEntrySocialImage;
+use App\Services\EntrySocialImageGenerator;
 use App\Support\NormalizesTurkmenText;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -144,7 +144,7 @@ class AnonymousSubmission extends Model
             $publishedEntry = Entry::find($this->published_entry_id);
 
             if ($publishedEntry) {
-                GenerateEntrySocialImage::dispatch($publishedEntry)->afterCommit();
+                app(EntrySocialImageGenerator::class)->generate($publishedEntry);
             }
         }
 

@@ -19,6 +19,6 @@ class GenerateEntrySocialImage implements ShouldQueue
 
     public function handle(EntrySocialImageGenerator $generator): void
     {
-        $generator->generate($this->entry->fresh());
+        $generator->generateOrFail($this->entry->fresh());
     }
 }

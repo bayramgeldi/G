@@ -14,6 +14,16 @@ class EntrySocialImageGenerator
 
     public function generate(?Entry $entry): void
     {
+        $this->generateImage($entry, false);
+    }
+
+    public function generateOrFail(?Entry $entry): void
+    {
+        $this->generateImage($entry, true);
+    }
+
+    private function generateImage(?Entry $entry, bool $throw): void
+    {
         if (! $entry || $entry->is_hidden) {
             return;
         }
@@ -79,7 +89,9 @@ class EntrySocialImageGenerator
                 'og_image_error' => Str::limit($exception->getMessage(), 1000, '...'),
             ])->save();
 
-            throw $exception;
+            if ($throw) {
+                throw $exception;
+            }
         }
     }
 
