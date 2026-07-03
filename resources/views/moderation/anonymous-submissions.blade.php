@@ -1,4 +1,4 @@
-<x-layout :title="__('app.review_anonymous')">
+<x-layout :title="__('app.review_anonymous')" :description="__('app.seo_review_anonymous_description')" :canonical="route('moderation.anonymous-submissions')" :noindex="true">
     <section class="mx-auto max-w-3xl">
         <h1 class="text-2xl font-black">{{ __('app.review_anonymous') }}</h1>
         <p class="mt-2 text-sm leading-6 text-stone-600">{{ __('app.anonymous_review_intro') }}</p>

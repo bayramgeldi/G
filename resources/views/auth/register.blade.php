@@ -1,4 +1,4 @@
-<x-layout :title="__('app.register')">
+<x-layout :title="__('app.register')" :description="__('app.seo_register_description')" :canonical="route('register')" :noindex="true">
     <div class="mx-auto max-w-md">
         <h1 class="text-2xl font-black">{{ __('app.register') }}</h1>
         <form method="post" action="{{ route('register') }}" class="mt-5 space-y-4 rounded-lg border border-stone-200 bg-white p-4">

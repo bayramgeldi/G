@@ -1,4 +1,4 @@
-<x-layout :title="__('app.suggest')">
+<x-layout :title="__('app.suggest')" :description="__('app.seo_suggest_description')" :canonical="route('entries.create')" :noindex="true">
     <div class="mx-auto max-w-2xl">
         <h1 class="text-2xl font-black">{{ __('app.suggest') }}</h1>
         @guest

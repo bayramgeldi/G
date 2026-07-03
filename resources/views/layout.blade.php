@@ -1,10 +1,35 @@
 <!doctype html>
 <html lang="tk">
 <head>
+    @php
+        $siteName = __('app.app_name');
+        $pageTitle = $title && $title !== $siteName ? $title.' | '.$siteName : $siteName;
+        $metaDescription = trim(strip_tags($description ?: __('app.seo_default_description')));
+        $canonicalUrl = $canonical ?: url()->current();
+        $socialImage = $ogImage ?: config('services.seo.og_image_url');
+    @endphp
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? __('app.app_name') }}</title>
+    <title>{{ $pageTitle }}</title>
+    <meta name="description" content="{{ $metaDescription }}">
+    <link rel="canonical" href="{{ $canonicalUrl }}">
+    <meta name="robots" content="{{ $noindex ? 'noindex, nofollow' : 'index, follow' }}">
+    <meta property="og:site_name" content="{{ $siteName }}">
+    <meta property="og:locale" content="tk_TM">
+    <meta property="og:type" content="{{ $ogType }}">
+    <meta property="og:title" content="{{ $pageTitle }}">
+    <meta property="og:description" content="{{ $metaDescription }}">
+    <meta property="og:url" content="{{ $canonicalUrl }}">
+    @if ($socialImage)
+        <meta property="og:image" content="{{ $socialImage }}">
+    @endif
+    <meta name="twitter:card" content="{{ $socialImage ? 'summary_large_image' : 'summary' }}">
+    <meta name="twitter:title" content="{{ $pageTitle }}">
+    <meta name="twitter:description" content="{{ $metaDescription }}">
+    @if ($socialImage)
+        <meta name="twitter:image" content="{{ $socialImage }}">
+    @endif
     @if (config('services.google_analytics.id'))
         <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.google_analytics.id') }}"></script>
         <script>

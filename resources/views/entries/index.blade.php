@@ -1,4 +1,4 @@
-<x-layout :title="__('app.app_name')">
+<x-layout :title="__('app.app_name')" :description="__('app.seo_home_description')" :canonical="route('home')">
     <section class="mb-6 rounded-lg bg-emerald-800 px-4 py-6 text-white sm:px-6">
         <h1 class="text-2xl font-black sm:text-4xl">{{ __('app.app_name') }}</h1>
         <p class="mt-2 max-w-2xl text-sm leading-6 text-emerald-50">{{ __('app.tagline') }}</p>

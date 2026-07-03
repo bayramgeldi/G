@@ -1,4 +1,4 @@
-<x-layout :title="__('app.rules')">
+<x-layout :title="__('app.rules')" :description="__('app.seo_rules_description')" :canonical="route('governance.rules')">
     <section class="mx-auto max-w-2xl">
         <h1 class="text-2xl font-black">{{ __('app.rules') }}</h1>
         <div class="mt-5 space-y-4 rounded-lg border border-stone-200 bg-white p-8 leading-7">

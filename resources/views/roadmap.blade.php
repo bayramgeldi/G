@@ -1,4 +1,4 @@
-<x-layout :title="__('app.roadmap')">
+<x-layout :title="__('app.roadmap')" :description="__('app.seo_roadmap_description')" :canonical="route('roadmap')">
     <section class="mx-auto max-w-3xl">
         <div class="mb-6">
             <p class="text-sm font-bold uppercase tracking-wide text-emerald-700">Product roadmap</p>
