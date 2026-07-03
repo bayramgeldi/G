@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AnonymousSubmission;
 use App\Models\Entry;
 use App\Support\NormalizesTurkmenText;
+use App\Support\RecaptchaVerifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -41,6 +42,8 @@ class EntryController extends Controller
         ]);
 
         if (! $request->user()) {
+            RecaptchaVerifier::verify($request, 'anonymous_entry_submit');
+
             AnonymousSubmission::makePending([
                 ...$validated,
                 'submitter_ip_hash' => $this->hashNullable($request->ip()),

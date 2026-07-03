@@ -32,6 +32,9 @@
                 <span class="text-sm font-bold">{{ __('app.example') }}</span>
                 <textarea name="example" rows="3" class="mt-1 w-full rounded-md border border-stone-300 px-3 py-3">{{ old('example') }}</textarea>
             </label>
+            @guest
+                @include('partials.recaptcha', ['action' => 'anonymous_entry_submit'])
+            @endguest
             <button class="w-full rounded-md bg-emerald-700 px-4 py-3 font-bold text-white hover:bg-emerald-800">
                 @guest
                     {{ __('app.submit_for_review') }}

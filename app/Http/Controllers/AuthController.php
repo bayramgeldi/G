@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Support\RecaptchaVerifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,6 +16,8 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+        RecaptchaVerifier::verify($request, 'register');
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:80'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
@@ -36,6 +39,8 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        RecaptchaVerifier::verify($request, 'login');
+
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],

@@ -19,6 +19,7 @@
                 <span class="text-sm font-bold">{{ __('app.confirm_password') }}</span>
                 <input type="password" name="password_confirmation" required class="mt-1 w-full rounded-md border border-stone-300 px-3 py-3">
             </label>
+            @include('partials.recaptcha', ['action' => 'register'])
             <button class="w-full rounded-md bg-emerald-700 px-4 py-3 font-bold text-white">{{ __('app.register') }}</button>
         </form>
     </div>

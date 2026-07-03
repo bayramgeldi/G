@@ -15,6 +15,7 @@
                 <input type="checkbox" name="remember" value="1" class="rounded border-stone-300">
                 {{ __('app.remember') }}
             </label>
+            @include('partials.recaptcha', ['action' => 'login'])
             <button class="w-full rounded-md bg-emerald-700 px-4 py-3 font-bold text-white">{{ __('app.login') }}</button>
         </form>
     </div>

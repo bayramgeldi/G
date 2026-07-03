@@ -48,6 +48,8 @@ return [
     'confirm_password' => 'Açar sözi tassykla',
     'remember' => 'Ýatda sakla',
     'login_failed' => 'Maglumatlar nädogry.',
+    'recaptcha_failed' => 'Howpsuzlyk barlagy başa barmady. Täzeden synanyşyň.',
+    'recaptcha_notice' => 'Bu sahypa reCAPTCHA bilen goralýar.',
     'no_entries' => 'Entek söz ýok. Ilkinji teklibi sen ber.',
     'no_definitions' => 'Bu söz üçin entek many ýok.',
     'rank' => 'Orun',
