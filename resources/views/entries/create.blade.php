@@ -56,6 +56,23 @@
 
             if (!input || !panel || !list) return;
 
+            function sanitizeDictionaryHtml(html) {
+                const allowedTags = new Set(['B', 'BR', 'DIV', 'EM', 'I', 'LI', 'OL', 'P', 'SPAN', 'STRONG', 'UL']);
+                const template = document.createElement('template');
+                template.innerHTML = html || '';
+
+                template.content.querySelectorAll('*').forEach((element) => {
+                    if (!allowedTags.has(element.tagName)) {
+                        element.replaceWith(...element.childNodes);
+                        return;
+                    }
+
+                    [...element.attributes].forEach((attribute) => element.removeAttribute(attribute.name));
+                });
+
+                return template.innerHTML;
+            }
+
             function hideSuggestions() {
                 panel.classList.add('hidden');
                 list.replaceChildren();
@@ -85,9 +102,9 @@
                         item.appendChild(alias);
                     }
 
-                    const meaning = document.createElement('p');
-                    meaning.className = 'mt-1 line-clamp-3 break-words text-sm leading-6 text-stone-700';
-                    meaning.textContent = suggestion.meaning;
+                    const meaning = document.createElement('div');
+                    meaning.className = 'dictionary-meaning mt-1 line-clamp-3 break-words text-sm leading-6 text-stone-700';
+                    meaning.innerHTML = sanitizeDictionaryHtml(suggestion.meaning);
                     item.appendChild(meaning);
 
                     list.appendChild(item);

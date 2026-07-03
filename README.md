@@ -1,4 +1,4 @@
-# Türkmen Sözlük
+# Göçme Manyly Sözler Sözlügi
 
 Mobile-first Laravel app for a community-driven democratic dictionary of Türkmen slang.
 

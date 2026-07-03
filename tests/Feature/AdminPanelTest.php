@@ -64,4 +64,26 @@ class AdminPanelTest extends TestCase
         $this->assertFalse(EntryResource::canEdit($entry));
         $this->assertFalse(DefinitionResource::canDelete($definition));
     }
+
+    public function test_admin_can_preview_entry_social_image_metadata(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $author = User::factory()->create();
+        $entry = Entry::create([
+            'user_id' => $author->id,
+            'term' => 'admin social term',
+            'slug' => 'admin-social-term',
+            'normalized_term' => 'admin social term',
+            'og_image_path' => 'og/entries/admin-social-term.png',
+            'og_image_generated_at' => now(),
+        ]);
+
+        $this->actingAs($admin)
+            ->get(EntryResource::getUrl('view', ['record' => $entry]))
+            ->assertOk()
+            ->assertSee('Social image preview')
+            ->assertSee('Social image path')
+            ->assertSee('og/entries/admin-social-term.png')
+            ->assertSee('http://localhost/og/entries/admin-social-term.png', false);
+    }
 }

@@ -18,12 +18,16 @@ class Entry extends Model
         'slug',
         'normalized_term',
         'is_hidden',
+        'og_image_path',
+        'og_image_generated_at',
+        'og_image_error',
     ];
 
     protected function casts(): array
     {
         return [
             'is_hidden' => 'boolean',
+            'og_image_generated_at' => 'datetime',
         ];
     }
 
@@ -73,6 +77,23 @@ class Entry extends Model
     public function visibleDefinitions(): HasMany
     {
         return $this->definitions()->where('is_hidden', false);
+    }
+
+    public function bestVisibleDefinition(): ?Definition
+    {
+        return $this->visibleDefinitions()
+            ->orderByDesc('votes_count')
+            ->oldest()
+            ->first();
+    }
+
+    public function socialImageUrl(): ?string
+    {
+        if (! $this->og_image_path) {
+            return null;
+        }
+
+        return asset($this->og_image_path);
     }
 
     public function scopeVisible($query)
