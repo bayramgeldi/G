@@ -101,6 +101,48 @@ class SocialImageGenerationTest extends TestCase
         @unlink($path);
     }
 
+    public function test_generator_handles_long_words_and_phrases(): void
+    {
+        if (! function_exists('imagecreatetruecolor')) {
+            $this->markTestSkipped('GD extension is not installed.');
+        }
+
+        $user = User::factory()->create();
+        $entries = [
+            Entry::create([
+                'user_id' => $user->id,
+                'term' => 'cakdanasacakdanasacakdanasa',
+                'slug' => 'long-single-word',
+                'normalized_term' => NormalizesTurkmenText::normalize('cakdanasacakdanasacakdanasa'),
+            ]),
+            Entry::create([
+                'user_id' => $user->id,
+                'term' => 'gaty uzyn soz duzumi bilen synag',
+                'slug' => 'long-phrase',
+                'normalized_term' => NormalizesTurkmenText::normalize('gaty uzyn soz duzumi bilen synag'),
+            ]),
+        ];
+
+        foreach ($entries as $entry) {
+            Definition::create([
+                'entry_id' => $entry->id,
+                'user_id' => $user->id,
+                'meaning' => 'A longer definition that should wrap inside the card without breaking the generated social preview image.',
+            ]);
+
+            app(EntrySocialImageGenerator::class)->generate($entry);
+
+            $entry->refresh();
+            $path = public_path($entry->og_image_path);
+            $size = getimagesize($path);
+
+            $this->assertFileExists($path);
+            $this->assertSame([1200, 630], [$size[0], $size[1]]);
+
+            @unlink($path);
+        }
+    }
+
     public function test_regenerate_social_images_command_processes_visible_entries_with_definitions(): void
     {
         $user = User::factory()->create();

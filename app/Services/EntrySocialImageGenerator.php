@@ -56,25 +56,31 @@ class EntrySocialImageGenerator
             imagesavealpha($image, true);
 
             $this->drawBackground($image);
-            $this->fillRoundedRectangle($image, 626, 70, 452, 490, 24, '#f6f1df');
+            $this->fillRoundedRectangle($image, 590, 76, 520, 478, 20, '#f6f1df');
 
             $cream = $this->color($image, '#fff7e6');
             $gold = $this->color($image, '#f2b84b');
             $ink = $this->color($image, '#17201d');
             $soft = $this->color($image, '#61706b');
+            $line = $this->color($image, '#d8c99f');
 
             $siteName = __('app.app_name');
-            $term = Str::limit($entry->term, 34, '...');
-            $meaning = 'Manysy: '.Str::limit(trim(strip_tags($definition->meaning)), 190, '...');
+            $term = Str::limit($entry->term, 60, '...');
+            $meaning = Str::limit(trim(strip_tags($definition->meaning)), 170, '...');
+            $termSize = $this->fitFontSize($term, $font, 72, 38, 440);
 
-            imagettftext($image, 30, 0, 84, 114, $gold, $font, $siteName);
-            $this->drawWrapped($image, $term, $font, 88, $cream, 80, 226, 480, 98, 2);
-            imagefilledrectangle($image, 90, 350, 340, 357, $gold);
-            $this->drawWrapped($image, __('app.og_card_tagline'), $font, 30, $cream, 84, 392, 450, 44, 3);
+            imagettftext($image, 27, 0, 82, 108, $gold, $font, $siteName);
+            imagettftext($image, 18, 0, 82, 144, $cream, $font, 'Turkmen slang dictionary');
+            $termLineHeight = (int) round($termSize * 1.16);
+            $termLines = $this->wrappedLines($term, $font, $termSize, 440, 2);
+            $this->drawLines($image, $termLines, $font, $termSize, $cream, 82, 304, $termLineHeight);
+            $underlineY = 304 + ((count($termLines) - 1) * $termLineHeight) + 36;
+            imagefilledrectangle($image, 86, $underlineY, 230, $underlineY + 5, $gold);
 
-            imagettftext($image, 48, 0, 682, 168, $soft, $font, __('app.og_card_label'));
-            $this->drawWrapped($image, $meaning, $font, 36, $ink, 682, 218, 330, 52, 5);
-            imagettftext($image, 24, 0, 682, 526, $soft, $font, Str::lower($siteName));
+            imagettftext($image, 26, 0, 662, 158, $soft, $font, 'Definition:');
+            imagefilledrectangle($image, 662, 184, 1030, 186, $line);
+            $this->drawWrapped($image, $meaning, $font, 38, $ink, 662, 268, 360, 54, 4);
+            imagettftext($image, 21, 0, 662, 498, $soft, $font, Str::lower($siteName));
 
             imagepng($image, $absolutePath);
             imagedestroy($image);
@@ -121,10 +127,38 @@ class EntrySocialImageGenerator
 
     private function drawWrapped($image, string $text, string $font, int $size, int $color, int $x, int $y, int $maxWidth, int $lineHeight, int $maxLines): void
     {
+        $this->drawLines(
+            $image,
+            $this->wrappedLines($text, $font, $size, $maxWidth, $maxLines),
+            $font,
+            $size,
+            $color,
+            $x,
+            $y,
+            $lineHeight
+        );
+    }
+
+    private function wrappedLines(string $text, string $font, int $size, int $maxWidth, int $maxLines): array
+    {
         $lines = [];
         $line = '';
 
         foreach (preg_split('/\s+/u', $text) as $word) {
+            if ($word === '') {
+                continue;
+            }
+
+            if ($this->textWidth($word, $font, $size) > $maxWidth) {
+                if ($line !== '') {
+                    $lines[] = $line;
+                    $line = '';
+                }
+
+                array_push($lines, ...$this->splitLongWord($word, $font, $size, $maxWidth));
+                continue;
+            }
+
             $candidate = trim($line.' '.$word);
 
             if ($this->textWidth($candidate, $font, $size) <= $maxWidth) {
@@ -149,8 +183,38 @@ class EntrySocialImageGenerator
             $visibleLines[$maxLines - 1] = rtrim($visibleLines[$maxLines - 1], '.').'...';
         }
 
-        foreach ($visibleLines as $index => $visibleLine) {
-            imagettftext($image, $size, 0, $x, $y + ($index * $lineHeight), $color, $font, $visibleLine);
+        return $visibleLines;
+    }
+
+    private function splitLongWord(string $word, string $font, int $size, int $maxWidth): array
+    {
+        $chunks = [];
+        $chunk = '';
+
+        foreach (preg_split('//u', $word, -1, PREG_SPLIT_NO_EMPTY) as $character) {
+            $candidate = $chunk.$character;
+
+            if ($chunk !== '' && $this->textWidth($candidate, $font, $size) > $maxWidth) {
+                $chunks[] = $chunk;
+                $chunk = $character;
+
+                continue;
+            }
+
+            $chunk = $candidate;
+        }
+
+        if ($chunk !== '') {
+            $chunks[] = $chunk;
+        }
+
+        return $chunks;
+    }
+
+    private function drawLines($image, array $lines, string $font, int $size, int $color, int $x, int $y, int $lineHeight): void
+    {
+        foreach ($lines as $index => $line) {
+            imagettftext($image, $size, 0, $x, $y + ($index * $lineHeight), $color, $font, $line);
         }
     }
 
@@ -159,6 +223,17 @@ class EntrySocialImageGenerator
         $box = imagettfbbox($size, 0, $font, $text);
 
         return abs($box[2] - $box[0]);
+    }
+
+    private function fitFontSize(string $text, string $font, int $maxSize, int $minSize, int $maxWidth): int
+    {
+        for ($size = $maxSize; $size >= $minSize; $size -= 2) {
+            if ($this->textWidth($text, $font, $size) <= $maxWidth) {
+                return $size;
+            }
+        }
+
+        return $minSize;
     }
 
     private function color($image, string $hex): int
@@ -233,8 +308,8 @@ class EntrySocialImageGenerator
         );
         imagedestroy($background);
 
-        imagefilledrectangle($image, 0, 0, self::WIDTH, self::HEIGHT, imagecolorallocatealpha($image, 12, 35, 30, 35));
-        imagefilledrectangle($image, 0, 0, 570, self::HEIGHT, imagecolorallocatealpha($image, 4, 32, 28, 34));
+        imagefilledrectangle($image, 0, 0, self::WIDTH, self::HEIGHT, imagecolorallocatealpha($image, 6, 30, 26, 46));
+        imagefilledrectangle($image, 0, 0, 555, self::HEIGHT, imagecolorallocatealpha($image, 3, 28, 25, 40));
     }
 
     private function loadBackgroundImage()
