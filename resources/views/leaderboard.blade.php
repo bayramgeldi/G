@@ -1,4 +1,4 @@
-<x-layout :title="__('app.leaderboard')">
+<x-layout :title="__('app.leaderboard')" :description="__('app.seo_leaderboard_description')" :canonical="route('leaderboard')">
     <h1 class="mb-5 text-2xl font-black">{{ __('app.leaderboard') }}</h1>
     <div class="overflow-hidden rounded-lg border border-stone-200 bg-white">
         @foreach ($users as $user)

@@ -1,4 +1,4 @@
-<x-layout :title="__('app.moderation_log')">
+<x-layout :title="__('app.moderation_log')" :description="__('app.seo_moderation_log_description')" :canonical="route('governance.log')">
     <div class="mb-5 flex items-center justify-between gap-3">
         <h1 class="text-2xl font-black">{{ __('app.moderation_log') }}</h1>
         <a href="{{ route('governance.rules') }}" class="text-sm font-bold text-emerald-800">{{ __('app.rules') }}</a>

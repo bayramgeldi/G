@@ -1,4 +1,4 @@
-<x-layout :title="__('app.login')">
+<x-layout :title="__('app.login')" :description="__('app.seo_login_description')" :canonical="route('login')" :noindex="true">
     <div class="mx-auto max-w-md">
         <h1 class="text-2xl font-black">{{ __('app.login') }}</h1>
         <form method="post" action="{{ route('login') }}" class="mt-5 space-y-4 rounded-lg border border-stone-200 bg-white p-4">
@@ -15,6 +15,7 @@
                 <input type="checkbox" name="remember" value="1" class="rounded border-stone-300">
                 {{ __('app.remember') }}
             </label>
+            @include('partials.recaptcha', ['action' => 'login'])
             <button class="w-full rounded-md bg-emerald-700 px-4 py-3 font-bold text-white">{{ __('app.login') }}</button>
         </form>
     </div>

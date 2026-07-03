@@ -1,4 +1,10 @@
-<x-layout :title="$entry->term">
+@php
+    $entryDescription = $definitions->first()
+        ? \Illuminate\Support\Str::limit(trim(strip_tags($definitions->first()->meaning)), 155)
+        : __('app.seo_entry_description', ['term' => $entry->term]);
+@endphp
+
+<x-layout :title="$entry->term" :description="$entryDescription" :canonical="route('entries.show', $entry)" og-type="article">
     <section class="mb-5">
         <div class="flex items-start justify-between gap-3">
             <div>
@@ -79,7 +85,7 @@
                         <blockquote data-lookup-text class="mt-3 border-l-4 border-amber-400 pl-3 text-sm leading-6 text-stone-600">{{ $definition->example }}</blockquote>
                     @endif
                     <div class="mt-3 flex items-center justify-between gap-3 text-xs text-stone-500">
-                        <span>{{ __('app.by') }} {{ $definition->user->name }}</span>
+                        <span>{{ __('app.by') }} {{ $definition->user->name ?? __('app.anonymous') }}</span>
                         @auth
                             @if (auth()->user()->is_admin)
                                 <form method="post" action="{{ route('admin.definitions.hide', $definition) }}">

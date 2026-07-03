@@ -1,10 +1,44 @@
 <!doctype html>
 <html lang="tk">
 <head>
+    @php
+        $siteName = __('app.app_name');
+        $pageTitle = $title && $title !== $siteName ? $title.' | '.$siteName : $siteName;
+        $metaDescription = trim(strip_tags($description ?: __('app.seo_default_description')));
+        $canonicalUrl = $canonical ?: url()->current();
+        $socialImage = $ogImage ?: config('services.seo.og_image_url');
+    @endphp
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? __('app.app_name') }}</title>
+    <title>{{ $pageTitle }}</title>
+    <meta name="description" content="{{ $metaDescription }}">
+    <link rel="canonical" href="{{ $canonicalUrl }}">
+    <meta name="robots" content="{{ $noindex ? 'noindex, nofollow' : 'index, follow' }}">
+    <meta property="og:site_name" content="{{ $siteName }}">
+    <meta property="og:locale" content="tk_TM">
+    <meta property="og:type" content="{{ $ogType }}">
+    <meta property="og:title" content="{{ $pageTitle }}">
+    <meta property="og:description" content="{{ $metaDescription }}">
+    <meta property="og:url" content="{{ $canonicalUrl }}">
+    @if ($socialImage)
+        <meta property="og:image" content="{{ $socialImage }}">
+    @endif
+    <meta name="twitter:card" content="{{ $socialImage ? 'summary_large_image' : 'summary' }}">
+    <meta name="twitter:title" content="{{ $pageTitle }}">
+    <meta name="twitter:description" content="{{ $metaDescription }}">
+    @if ($socialImage)
+        <meta name="twitter:image" content="{{ $socialImage }}">
+    @endif
+    @if (config('services.google_analytics.id'))
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.google_analytics.id') }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', @json(config('services.google_analytics.id')));
+        </script>
+    @endif
     @vite(['resources/css/app.css'])
 </head>
 <body class="min-h-screen bg-stone-50 text-stone-950">
@@ -21,12 +55,16 @@
                     <a class="rounded-md px-2 py-2 font-medium text-stone-700 hover:bg-stone-100" href="{{ route('governance.rules') }}">{{ __('app.rules') }}</a>
                     <a class="rounded-md px-2 py-2 font-medium text-stone-700 hover:bg-stone-100" href="{{ route('governance.log') }}">{{ __('app.moderation_log') }}</a>
                     @auth
+                        @if (auth()->user()->canReviewAnonymousSubmissions())
+                            <a class="rounded-md px-2 py-2 font-medium text-stone-700 hover:bg-stone-100" href="{{ route('moderation.anonymous-submissions') }}">{{ __('app.review_anonymous') }}</a>
+                        @endif
                         <a class="rounded-md bg-emerald-700 px-3 py-2 font-semibold text-white hover:bg-emerald-800" href="{{ route('entries.create') }}">{{ __('app.suggest') }}</a>
                         <form method="post" action="{{ route('logout') }}">
                             @csrf
                             <button class="rounded-md px-2 py-2 font-medium text-stone-700 hover:bg-stone-100">{{ __('app.logout') }}</button>
                         </form>
                     @else
+                        <a class="rounded-md bg-emerald-700 px-3 py-2 font-semibold text-white hover:bg-emerald-800" href="{{ route('entries.create') }}">{{ __('app.suggest') }}</a>
                         <a class="rounded-md px-2 py-2 font-medium text-stone-700 hover:bg-stone-100" href="{{ route('login') }}">{{ __('app.login') }}</a>
                         <a class="rounded-md bg-emerald-700 px-3 py-2 font-semibold text-white hover:bg-emerald-800" href="{{ route('register') }}">{{ __('app.register') }}</a>
                     @endauth

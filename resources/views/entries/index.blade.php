@@ -1,4 +1,4 @@
-<x-layout :title="__('app.app_name')">
+<x-layout :title="__('app.app_name')" :description="__('app.seo_home_description')" :canonical="route('home')">
     <section class="mb-6 rounded-lg bg-emerald-800 px-4 py-6 text-white sm:px-6">
         <h1 class="text-2xl font-black sm:text-4xl">{{ __('app.app_name') }}</h1>
         <p class="mt-2 max-w-2xl text-sm leading-6 text-emerald-50">{{ __('app.tagline') }}</p>
@@ -10,9 +10,7 @@
 
     <div class="mb-4 flex items-center justify-between">
         <h2 class="text-lg font-black">{{ __('app.latest') }}</h2>
-        @auth
-            <a href="{{ route('entries.create') }}" class="text-sm font-bold text-emerald-800">{{ __('app.suggest') }}</a>
-        @endauth
+        <a href="{{ route('entries.create') }}" class="text-sm font-bold text-emerald-800">{{ __('app.suggest') }}</a>
     </div>
 
     @forelse ($entries as $entry)
@@ -20,7 +18,7 @@
             <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0">
                     <h3 class="break-words text-xl font-black">{{ $entry->term }}</h3>
-                    <p class="mt-1 text-sm text-stone-500">{{ __('app.by') }} {{ $entry->user->name ?? 'unknown' }}</p>
+                    <p class="mt-1 text-sm text-stone-500">{{ __('app.by') }} {{ $entry->user->name ?? __('app.anonymous') }}</p>
                 </div>
                 <div class="shrink-0 rounded-md bg-stone-100 px-2 py-1 text-center text-xs font-bold text-stone-700">
                     {{ $entry->definitions_count }}<br>{{ __('app.definitions') }}

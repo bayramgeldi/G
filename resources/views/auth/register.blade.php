@@ -1,4 +1,4 @@
-<x-layout :title="__('app.register')">
+<x-layout :title="__('app.register')" :description="__('app.seo_register_description')" :canonical="route('register')" :noindex="true">
     <div class="mx-auto max-w-md">
         <h1 class="text-2xl font-black">{{ __('app.register') }}</h1>
         <form method="post" action="{{ route('register') }}" class="mt-5 space-y-4 rounded-lg border border-stone-200 bg-white p-4">
@@ -19,6 +19,7 @@
                 <span class="text-sm font-bold">{{ __('app.confirm_password') }}</span>
                 <input type="password" name="password_confirmation" required class="mt-1 w-full rounded-md border border-stone-300 px-3 py-3">
             </label>
+            @include('partials.recaptcha', ['action' => 'register'])
             <button class="w-full rounded-md bg-emerald-700 px-4 py-3 font-bold text-white">{{ __('app.register') }}</button>
         </form>
     </div>
