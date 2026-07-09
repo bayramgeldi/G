@@ -81,6 +81,7 @@ class AdminPanelTest extends TestCase
         $this->actingAs($admin)
             ->get(EntryResource::getUrl('view', ['record' => $entry]))
             ->assertOk()
+            ->assertSee('Regenerate social image')
             ->assertSee('Social image preview')
             ->assertSee('Social image path')
             ->assertSee('og/entries/admin-social-term.png')
