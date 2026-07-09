@@ -7,9 +7,26 @@
 <x-layout :title="$entry->term" :description="$entryDescription" :canonical="route('entries.show', $entry)" :og-image="$entry->socialImageUrl()" :og-image-alt="__('app.og_image_alt', ['term' => $entry->term])" og-type="article">
     <section class="mb-5">
         <div class="flex items-start justify-between gap-3">
-            <div>
+            <div class="min-w-0">
                 <h1 data-lookup-text class="break-words text-3xl font-black sm:text-5xl">{{ $entry->term }}</h1>
                 <p class="mt-2 text-sm text-stone-500">{{ __('app.click_words') }}</p>
+                @unless ($entry->is_hidden)
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        <button
+                            type="button"
+                            data-copy-entry-url="{{ $entry->publicUrl() }}"
+                            data-default-label="{{ __('app.copy_link') }}"
+                            data-success-label="{{ __('app.link_copied') }}"
+                            class="rounded-md border border-stone-300 bg-white px-3 py-2 text-sm font-bold text-stone-700 hover:bg-stone-100"
+                        >{{ __('app.copy_link') }}</button>
+                        <a
+                            href="{{ $entry->xShareUrl() }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="rounded-md bg-stone-950 px-3 py-2 text-sm font-bold text-white hover:bg-stone-800"
+                        >{{ __('app.share_on_x') }}</a>
+                    </div>
+                @endunless
             </div>
             @auth
                 @if (auth()->user()->is_admin)
@@ -157,4 +174,32 @@
             </section>
         @endif
     @endauth
+
+    <script>
+        async function copyEntryUrl(url) {
+            if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(url);
+                return;
+            }
+
+            const input = document.createElement('textarea');
+            input.value = url;
+            input.style.position = 'fixed';
+            input.style.opacity = '0';
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            input.remove();
+        }
+
+        document.querySelectorAll('[data-copy-entry-url]').forEach((button) => {
+            button.addEventListener('click', async () => {
+                await copyEntryUrl(button.dataset.copyEntryUrl);
+                button.textContent = button.dataset.successLabel;
+                window.setTimeout(() => {
+                    button.textContent = button.dataset.defaultLabel;
+                }, 2000);
+            });
+        });
+    </script>
 </x-layout>

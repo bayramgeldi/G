@@ -86,4 +86,41 @@ class AdminPanelTest extends TestCase
             ->assertSee('og/entries/admin-social-term.png')
             ->assertSee('http://localhost/og/entries/admin-social-term.png', false);
     }
+
+    public function test_admin_entry_pages_offer_sharing_only_for_visible_entries(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $author = User::factory()->create();
+        $visible = Entry::create([
+            'user_id' => $author->id,
+            'term' => 'visible share term',
+            'slug' => 'visible-share-term',
+            'normalized_term' => 'visible share term',
+        ]);
+        $hidden = Entry::create([
+            'user_id' => $author->id,
+            'term' => 'hidden share term',
+            'slug' => 'hidden-share-term',
+            'normalized_term' => 'hidden share term',
+            'is_hidden' => true,
+        ]);
+
+        $this->actingAs($admin)
+            ->get(EntryResource::getUrl('index'))
+            ->assertOk()
+            ->assertSee(e($visible->xShareUrl()), false)
+            ->assertDontSee(e($hidden->xShareUrl()), false);
+
+        $this->actingAs($admin)
+            ->get(EntryResource::getUrl('view', ['record' => $visible]))
+            ->assertOk()
+            ->assertSee(__('app.copy_link'))
+            ->assertSee(e($visible->xShareUrl()), false);
+
+        $this->actingAs($admin)
+            ->get(EntryResource::getUrl('view', ['record' => $hidden]))
+            ->assertOk()
+            ->assertDontSee(__('app.copy_link'))
+            ->assertDontSee(e($hidden->xShareUrl()), false);
+    }
 }

@@ -4,12 +4,15 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\EntryResource\Pages;
 use App\Models\Entry;
+use Filament\Actions\Action;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Js;
 
 class EntryResource extends ReadOnlyResource
 {
@@ -37,6 +40,9 @@ class EntryResource extends ReadOnlyResource
             TextColumn::make('og_image_generated_at')->label('Social image generated')->dateTime()->sortable(),
             TextColumn::make('og_image_error')->label('Social image error')->limit(40)->wrap(),
             TextColumn::make('created_at')->dateTime()->sortable(),
+        ])->recordActions([
+            static::copyPublicUrlAction(),
+            static::shareOnXAction(),
         ]);
     }
 
@@ -75,5 +81,28 @@ class EntryResource extends ReadOnlyResource
             'index' => Pages\ListEntries::route('/'),
             'view' => Pages\ViewEntry::route('/{record}'),
         ];
+    }
+
+    public static function copyPublicUrlAction(): Action
+    {
+        return Action::make('copyPublicUrl')
+            ->label(__('app.copy_link'))
+            ->icon(Heroicon::OutlinedClipboard)
+            ->color('gray')
+            ->hidden(fn (Entry $record): bool => $record->is_hidden)
+            ->alpineClickHandler(fn (Entry $record): string => sprintf(
+                'navigator.clipboard.writeText(%s).then(() => new FilamentNotification().title(%s).success().send())',
+                Js::from($record->publicUrl()),
+                Js::from(__('app.link_copied')),
+            ));
+    }
+
+    public static function shareOnXAction(): Action
+    {
+        return Action::make('shareOnX')
+            ->label(__('app.share_on_x'))
+            ->icon(Heroicon::OutlinedArrowTopRightOnSquare)
+            ->hidden(fn (Entry $record): bool => $record->is_hidden)
+            ->url(fn (Entry $record): string => $record->xShareUrl(), shouldOpenInNewTab: true);
     }
 }
