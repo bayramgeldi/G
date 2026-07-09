@@ -96,6 +96,19 @@ class Entry extends Model
         return asset($this->og_image_path);
     }
 
+    public function publicUrl(): string
+    {
+        return route('entries.show', $this);
+    }
+
+    public function xShareUrl(): string
+    {
+        return 'https://x.com/intent/tweet?'.http_build_query([
+            'text' => $this->term,
+            'url' => $this->publicUrl(),
+        ], encoding_type: PHP_QUERY_RFC3986);
+    }
+
     public function scopeVisible($query)
     {
         return $query->where('is_hidden', false);

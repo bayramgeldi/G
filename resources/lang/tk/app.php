@@ -112,4 +112,7 @@ return [
     'og_card_label' => 'SÖZ',
     'og_card_tagline' => 'Jemgyýet tarapyndan düşündirilýän türkmençe söz.',
     'og_image_alt' => ':term sözüniň Göçme Manyly Sözler Sözlügindäki many kartasy',
+    'copy_link' => 'Salgyny göçür',
+    'link_copied' => 'Salgy göçürildi',
+    'share_on_x' => 'X-de paýlaş',
 ];

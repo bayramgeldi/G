@@ -33,6 +33,29 @@ class SlangDictionaryTest extends TestCase
         $this->get(route('entries.show', $entry))->assertOk()->assertSee('Örän gowy zat.');
     }
 
+    public function test_entry_page_exposes_copy_and_x_share_urls(): void
+    {
+        $user = User::factory()->create();
+        $entry = Entry::create([
+            'user_id' => $user->id,
+            'term' => 'Çeşme & söz',
+            'slug' => 'cesme-soz',
+            'normalized_term' => 'cesme soz',
+        ]);
+
+        $this->get(route('entries.show', $entry))
+            ->assertOk()
+            ->assertSee('data-copy-entry-url="'.$entry->publicUrl().'"', false)
+            ->assertSee('href="'.e($entry->xShareUrl()).'"', false)
+            ->assertSee(__('app.copy_link'))
+            ->assertSee(__('app.share_on_x'));
+
+        $this->assertSame(
+            'https://x.com/intent/tweet?text=%C3%87e%C5%9Fme%20%26%20s%C3%B6z&url='.rawurlencode($entry->publicUrl()),
+            $entry->xShareUrl(),
+        );
+    }
+
     public function test_authenticated_users_can_create_entries_and_definitions(): void
     {
         $user = User::factory()->create();
