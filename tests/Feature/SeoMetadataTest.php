@@ -17,15 +17,18 @@ class SeoMetadataTest extends TestCase
     {
         config(['app.url' => 'https://example.test']);
 
-        $this->get(route('home'))
+        $response = $this->get(route('home'))
             ->assertOk()
             ->assertSee('<meta name="description" content="'.e(__('app.seo_home_description')).'">', false)
-            ->assertSee('<link rel="canonical" href="'.route('home').'">', false)
+            ->assertSee('<link rel="canonical" href="https://gmss.armyt.co/">', false)
+            ->assertSee('<meta property="og:url" content="https://gmss.armyt.co/">', false)
             ->assertSee('<meta name="robots" content="index, follow">', false)
             ->assertSee('<meta property="og:type" content="website">', false)
             ->assertSee('<meta property="og:title" content="'.e(__('app.app_name')).'">', false)
             ->assertSee('<meta name="twitter:card" content="summary">', false)
             ->assertDontSee('og:image', false);
+
+        $this->assertSame(1, substr_count($response->getContent(), '<link rel="canonical"'));
     }
 
     public function test_optional_open_graph_image_is_rendered_when_configured(): void
@@ -58,9 +61,18 @@ class SeoMetadataTest extends TestCase
             ->assertOk()
             ->assertSee('<meta property="og:type" content="article">', false)
             ->assertSee('<meta property="og:title" content="seo term | '.e(__('app.app_name')).'">', false)
-            ->assertSee('<link rel="canonical" href="'.route('entries.show', $entry).'">', false)
+            ->assertSee('<link rel="canonical" href="https://gmss.armyt.co/entries/seo-term">', false)
+            ->assertSee('<meta property="og:url" content="https://gmss.armyt.co/entries/seo-term">', false)
             ->assertSee('Meaning with markup and useful context.', false)
             ->assertDontSee('<strong>Meaning with markup</strong>', false);
+    }
+
+    public function test_http_requests_render_https_urls_on_the_canonical_origin(): void
+    {
+        $this->get('http://example.test/')
+            ->assertOk()
+            ->assertSee('<link rel="canonical" href="https://gmss.armyt.co/">', false)
+            ->assertSee('<meta property="og:url" content="https://gmss.armyt.co/">', false);
     }
 
     public function test_entry_page_uses_generated_social_image_metadata(): void
