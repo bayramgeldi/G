@@ -5,7 +5,8 @@
         $siteName = __('app.app_name');
         $pageTitle = $title && $title !== $siteName ? $title.' | '.$siteName : $siteName;
         $metaDescription = trim(strip_tags($description ?: __('app.seo_default_description')));
-        $canonicalUrl = $canonical ?: url()->current();
+        $canonicalPath = parse_url($canonical ?: url()->current(), PHP_URL_PATH) ?: '/';
+        $canonicalUrl = rtrim(config('services.seo.canonical_origin'), '/').'/'.ltrim($canonicalPath, '/');
         $socialImage = $ogImage ?: config('services.seo.og_image_url');
     @endphp
     <meta charset="utf-8">
